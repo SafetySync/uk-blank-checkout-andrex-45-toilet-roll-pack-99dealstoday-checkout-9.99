@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Slider with Fullscreen Preview</title>
+    <link rel="stylesheet" href="styles.css">
+	
+	<style>
+	.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #F8C8DC;
+    padding: 10px 20px;
+    color: white;
+}
+
+.nav-left {
+    font-size: 16px;
+}
+
+.nav-left .hot {
+    font-weight: bold;
+    color: red;
+}
+
+.nav-right a {
+    margin-left: 10px;
+    display: inline-block;
+}
+
+.nav-right img {
+    width: 20px;
+    height: 20px;
+    filter: brightness(1) invert(0); /* This will make the icons white */
+    transition: transform 0.3s ease;
+}
+
+.nav-right img:hover {
+    transform: scale(1.2);
+}
+		
+		
+	</style>
+	
+	<style>
+		
+	body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+.slider-container {
+    position: relative;
+    width: 100%;
+}
+
+.slider {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.slide {
+    flex: 0 0 100%; /* Show 2 images at a time by default */
+    box-sizing: border-box;
+    padding: 5px;
+}
+
+.slide img {
+    width: 100%;	
+    cursor: pointer;
+	align-left;
+	padding-left: 0;
+    padding: 20px;
+    border-radius: 5px;
+    transition: transform 0.3s;
+    direction: rtl;
+}
+
+.slide img:hover {
+    transform: scale(1.05);
+}
+
+.nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    font-size: 24px;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.prev-button {
+    left: 0;
+}
+
+.next-button {
+    right: 0;
+}
+
+.fullscreen {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    padding-top: 60px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.9);
+}
+
+.fullscreen img {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.slider-container {
+    display: flex;
+	align-left;
+	padding-left: 0;
+    width: 100%;
+    max-width: 1500px;
+    margin: 20px;
+}
+
+.thumbnails {
+    display: flex;
+    flex-direction: column;
+	align-left;
+    width: 20%;
+    overflow-y: auto;
+    height: 75vh;
+	padding-left: 0;
+    padding-right: 10px;
+    box-sizing: border-box;
+}
+
+.thumbnail {
+    margin-bottom: 10px;
+}
+
+.thumbnail img {
+    width: 60%;
+    cursor: pointer;
+	align-left;
+    border-radius: 5px;
+    padding: 5px;
+    border: solid;
+    border-color: black;
+    transition: transform 0.3s;
+}
+
+.thumbnail img:hover {
+    transform: scale(1.05);
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+    .slide {
+        flex: 0 0 60%; /* Show 1.5 images at a time */
+    }
+
+    .thumbnail img {
+        width: 75%; /* Larger thumbnails */
+    }
+}
+
+@media (max-width: 768px) {
+    .slide {
+        flex: 0 0 80%; /* Show 1.25 images at a time */
+    }
+
+    .thumbnail img {
+        width: 100%; /* Full width thumbnails */
+    }
+
+    .thumbnails {
+        flex-direction: row;
+        width: 60%;
+		align-left;
+        height: auto;
+        padding-right: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+    }
+
+    .thumbnail {
+        display: inline-block;
+		align-left;
+        margin-right: 0px;
+    }
+}
+
+@media (max-width: 480px) {
+    .slide {
+        flex: 0 0 100%; /* Show 1 image at a time */
+    }
+
+    .thumbnail img {
+        width: 100%; /* Full width thumbnails */
+		align-left;
+    }
+
+    .nav-button {
+        font-size: 20px;
+        padding: 5px;
+    }
+}
+		
+.fullscreen-prev-button,
+.fullscreen-next-button {
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    font-size: 24px;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1000;
+    position: absolute;
+}
+
+.fullscreen-prev-button {
+    left: 10px;
+}
+
+.fullscreen-next-button {
+    right: 10px;
+}
+	</style>
+	<style>
+		.navbar2 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: palevioletred;
+        color: white;
+        padding: 10 0px;
+    }
+
+    .nav-item {
+        position: relative;
+        margin: 10 0px;
+    }
+
+    .nav-link2 {
+        display: block;
+        padding: 10px 15px;
+        text-decoration: none;
+        color: white;
+        transition: background-color 0.3s;
+    }
+
+    .nav-link2:hover {
+        background-color: #FFFFFF;
+		color: black;
+		border-radius: 6px;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #333;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+
+    .dropdown-content a {
+        display: block;
+        padding: 10px 15px;
+        text-decoration: none;
+        color: white;
+    }
+	.dropdown-content a:hover {
+    background-color: #E5C800;
+	color: black;
+		}
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+		.burger-menu {
+    display: flex;
+    align-items: center;
+    margin-right: 10px; /* Adjust margin as needed */
+}
+
+.burger-icon {
+    width: 25px; /* Adjust width of burger icon */
+    height: 20px; /* Adjust height of burger icon */
+    position: relative;
+    cursor: pointer;
+}
+
+.bar {
+    width: 100%;
+    height: 3px;
+    background-color: white;
+    margin: 3px 0;
+    transition: 0.4s;
+}
+
+/* Styling for active burger icon (open state) */
+.burger-icon.active .bar:nth-child(1) {
+    transform: rotate(-45deg) translate(-5px, 5px);
+}
+
+.burger-icon.active .bar:nth-child(2) {
+    opacity: 0;
+}
+
+.burger-icon.active .bar:nth-child(3) {
+    transform: rotate(45deg) translate(-5px, -5px);
+}
+		
+</style>
+</head>
+	
+<body>
+	
+	<nav class="navbar">
+        <div class="nav-left">
+            <span class="hot">HOT ✌🏼</span> Free Express Shipping on orders £19!
+        </div>
+        <div class="nav-right">
+            <a href="https://facebook.com" target="_blank"><img src="./index_files/Facebook_logo_(square).png" alt="Facebook"></a>
+            <a href="https://twitter.com" target="_blank"><img src="./index_files/Logo-Twitter-icon-transparent-PNG.png" alt="Twitter"></a>
+            <a href="https://instagram.com" target="_blank"><img src="./index_files/sm_5b37de3263964.png" alt="Instagram"></a>
+            <a href="https://linkedin.com" target="_blank"><img src="index_files/Linkedin-logo-transparent-PNG.png" alt="LinkedIn"></a>
+        </div>
+    </nav><center><img src="./index_files/images.png"></center>
+	
+	<nav class="navbar2 burger-menu">    
+		<div class="burger-icon">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+		<div class="nav-item dropdown">
+        <a class="nav-link2" href="{offer_link}">Shop by Categories</a>
+		<div class="dropdown-content">
+            <a href="{offer_link}">All Product</a>
+            <a href="{offer_link}">Bulk Snacks</a>
+            <a href="{offer_link}">Beverages</a>
+			<a href="{offer_link}">Household Essentials</a>
+            <a href="{offer_link}">Chocolate & Confectionery</a>
+            <a href="{offer_link}">Wine</a>
+			<a href="{offer_link}">Tea</a>
+			<a href="{offer_link}">Milk</a>
+			<a href="{offer_link}">Sauces</a>
+			<a href="{offer_link}">Baking Products</a>
+			<a href="{offer_link}">Today's Best Deals</a>
+        </div>
+    </div>
+    <div class="nav-item dropdown">
+        <a class="nav-link2" href="{offer_link}">HOME</a>        
+    </div>
+    <div class="nav-item dropdown">
+        <a class="nav-link2" href="{offer_link}">SHOP</a>        
+    </div>
+    <div class="nav-item dropdown">
+        <a class="nav-link2" href="{offer_link}">ALL COLLECTIONS</a>        
+    </div>
+    <div class="nav-item dropdown">
+        <a class="nav-link2" href="{offer_link}">CART</a>
+        
+    </div>
+    <div class="nav-item dropdown">
+        <a class="nav-link2" href="{offer_link}">CHECKOUT</a>        
+    </div>
+	<div class="nav-item dropdown">
+        <a class="nav-link2" href="{offer_link}">MY ACCOUNT</a>        
+    </div>
+</nav><br><br><br>
+	
+	<!--
+	<div class="slider-container">
+        <div class="thumbnails">
+            <div class="thumbnail"><img src="./index_files/portfolio-012.jpg" alt="Image 1"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-022.jpg" alt="Image 2"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-033.jpg" alt="Image 3"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-044.jpg" alt="Image 4"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-055.jpg" alt="Image 5"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-066.jpg" alt="Image 6"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-077.jpg" alt="Image 7"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-012.jpg" alt="Image 8"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-022.jpg" alt="Image 9"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-033.jpg" alt="Image 10"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-044.jpg" alt="Image 11"></div>
+        </div>
+	
+    <div class="slider-container">
+        <button class="nav-button prev-button">&#10094;</button>
+        <div class="slider">
+            <div class="slides">
+            <div class="slide"><img src="./index_files/portfolio-012.jpg" alt="Image 1"></div>
+            <div class="slide"><img src="./index_files/portfolio-022.jpg" alt="Image 2"></div>
+            <div class="slide"><img src="./index_files/portfolio-033.jpg" alt="Image 3"></div>
+            <div class="slide"><img src="./index_files/portfolio-044.jpg" alt="Image 4"></div>
+            <div class="slide"><img src="./index_files/portfolio-055.jpg" alt="Image 5"></div>
+            <div class="slide"><img src="./index_files/portfolio-066.jpg" alt="Image 6"></div>
+            <div class="slide"><img src="./index_files/portfolio-077.jpg" alt="Image 7"></div>
+            <div class="slide"><img src="./index_files/portfolio-012.jpg" alt="Image 8"></div>
+            <div class="slide"><img src="./index_files/portfolio-022.jpg" alt="Image 9"></div>
+            <div class="slide"><img src="./index_files/portfolio-033.jpg" alt="Image 10"></div>
+            <div class="slide"><img src="./index_files/portfolio-044.jpg" alt="Image 11"></div>
+        </div>
+        </div>
+        <button class="nav-button next-button">&#10095;</button>
+    </div>
+
+<div id="fullscreen" class="fullscreen">
+        <span class="close">&times;</span>
+        <img class="fullscreen-img" id="fullscreenImg">
+		<button class="nav-button fullscreen-prev-button" onclick="showPrevFullscreenSlide()">&#10094;</button>
+        <button class="nav-button fullscreen-next-button" onclick="showNextFullscreenSlide()">&#10095;</button>		
+    </div>
+
+
+-->
+		
+		<style>
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 97%;
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .row {
+            display: flex;
+            justify-content: space-around;
+            margin: 10px 0;
+        }
+        .box {
+            flex: 1;
+            margin: 0 10px;
+            padding: 20px;
+            border: 1px solid #999;
+            border-radius: 5px;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+    </style>
+
+    
+     
+
+<div class="container">
+        <div class="row">
+            <div class="box">
+			<div class="slider-container">
+        <div class="thumbnails">
+            <div class="thumbnail"><img src="./index_files/portfolio-012.jpg" alt="Image 1"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-022.jpg" alt="Image 2"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-033.jpg" alt="Image 3"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-044.jpg" alt="Image 4"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-055.jpg" alt="Image 5"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-066.jpg" alt="Image 6"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-077.jpg" alt="Image 7"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-012.jpg" alt="Image 8"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-022.jpg" alt="Image 9"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-033.jpg" alt="Image 10"></div>
+            <div class="thumbnail"><img src="./index_files/portfolio-044.jpg" alt="Image 11"></div>
+        </div>
+	
+    <div class="slider-container">
+        <button class="nav-button prev-button">&#10094;</button>
+        <div class="slider">
+            <div class="slides">
+            <div class="slide"><img src="./index_files/portfolio-012.jpg" alt="Image 1"></div>
+            <div class="slide"><img src="./index_files/portfolio-022.jpg" alt="Image 2"></div>
+            <div class="slide"><img src="./index_files/portfolio-033.jpg" alt="Image 3"></div>
+            <div class="slide"><img src="./index_files/portfolio-044.jpg" alt="Image 4"></div>
+            <div class="slide"><img src="./index_files/portfolio-055.jpg" alt="Image 5"></div>
+            <div class="slide"><img src="./index_files/portfolio-066.jpg" alt="Image 6"></div>
+            <div class="slide"><img src="./index_files/portfolio-077.jpg" alt="Image 7"></div>
+            <div class="slide"><img src="./index_files/portfolio-012.jpg" alt="Image 8"></div>
+            <div class="slide"><img src="./index_files/portfolio-022.jpg" alt="Image 9"></div>
+            <div class="slide"><img src="./index_files/portfolio-033.jpg" alt="Image 10"></div>
+            <div class="slide"><img src="./index_files/portfolio-044.jpg" alt="Image 11"></div>
+        </div>
+        </div>
+        <button class="nav-button next-button">&#10095;</button>
+    </div>
+				<div id="fullscreen" class="fullscreen">
+        <span class="close">&times;</span>
+        <img class="fullscreen-img" id="fullscreenImg">
+		<button class="nav-button fullscreen-prev-button" onclick="showPrevFullscreenSlide()">&#10094;</button>
+        <button class="nav-button fullscreen-next-button" onclick="showNextFullscreenSlide()">&#10095;</button>		
+    </div>
+			</div>
+            <div class="box" style="display: none;">
+				<span style="font-weight: bold; color: orangered; cursor: pointer; padding: 20px;">		
+			To organize your HTML content into sections and ensure the slider with thumbnails is grouped on the left while the fullscreen view is properly styled, you can follow this approach. This structure will allow you to clearly differentiate between the left and right groups, ensuring a better-organized layout. Here's the updated code:</span>
+			</div>
+        </div>
+        
+	
+	<span style="font-weight: bold; color: black; cursor: pointer; padding: 20px;">			
+		<a style="background-color: #BF0003; padding: 8px 12px; border-radius: 15px; color:aliceblue;">-87%</a><h1>【2024 Special Deals + Free Shipping】Andrex 45 Toilet Roll Pack Gentle Clean Toilet Rolls(Dermatologically Tested)-toilet paper</span></h1><span style="color: gray; font-size: 25px; font-weight: 100">£ 9.99</span>
+		<ul><li><span>Gentle on your family’s skin – Andrex Gentle Clean toilet roll fragrance free, dermatologically tested.</span></li><br>
+<li><span>Enjoy our loveable puppy – Featuring puppy designs on every sheet, Andrex Gentle Clean is designed for all the family.</span></li><br>
+<li><span>Gentle on skin – The British Skin Foundation recognise Andrex research into clean and healthy skin. Andrex Gentle Clean is made with 100% soft natural fibres and gives a really gentle clean.</span></li><br>
+<li><span>Shower Fresh Clean – Try Andrex Gentle Clean with Andrex Washlets Moist Toilet Tissue and experience a shower fresh clean. They are safe to flush down your toilet, biodegradable and plastic free.</span></li><br>
+<li><span>Pack of 45 Toilet Rolls – Bulk buy this family essential with a pack of 45 Gentle Clean toilet rolls so you never run out.</span></li>
+</ul>
+			
+			<style>
+			.product-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.product-details {
+    text-align: center;
+}
+
+.quantity-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.quantity-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 5px;
+}
+
+.quantity-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+#quantity {
+    width: 50px;
+    text-align: center;
+    border: 1px solid #ccc;
+    margin: 0 10px;
+    border-radius: 5px;
+    font-size: 18px;
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.action-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 15px 50px;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.action-button:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .quantity-container {
+        flex-direction: column;
+    }
+
+    #quantity {
+        margin: 10px 0;
+    }
+
+    .buttons-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .action-button {
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .quantity-button {
+        padding: 8px;
+        font-size: 16px;
+    }
+
+    #quantity {
+        width: 40px;
+        font-size: 16px;
+    }
+
+    .action-button {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+}
+
+			</style>
+			
+		<div class="product-container">
+        <div class="product-details">
+            <h1 style="color: lightcoral">Andrex</h1>
+            <p>Experience the ultra-soft touch of our tissues, expertly designed for ultimate comfort and durability.</p>
+            <div class="quantity-container">
+                <button class="quantity-button" id="decrease">-</button>
+                <input type="text" id="quantity" value="1" readonly>
+                <button class="quantity-button" id="increase">+</button>
+            </div>
+            <div class="buttons-container">                
+                <button class="action-button" id="buy-now"><font size="+3">Buy Now</font><br><br><span style="color: black">Low Stock Available</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+    <script src="script.js"></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+    const quantityInput = document.getElementById('quantity');
+    const increaseButton = document.getElementById('increase');
+    const decreaseButton = document.getElementById('decrease');
+    const addToCartButton = document.getElementById('add-to-cart');
+    const buyNowButton = document.getElementById('buy-now');
+
+    increaseButton.addEventListener('click', () => {
+        quantityInput.value = parseInt(quantityInput.value) + 1;
+        updateButtons();
+    });
+
+    decreaseButton.addEventListener('click', () => {
+        if (quantityInput.value > 1) {
+            quantityInput.value = parseInt(quantityInput.value) - 1;
+            updateButtons();
+        }
+    });
+
+    addToCartButton.addEventListener('click', () => {
+        alert(`Added ${quantityInput.value} items to cart`);
+    });
+
+    buyNowButton.addEventListener('click', () => {
+        alert(`Bought ${quantityInput.value} items`);
+        window.location.href = '{offer_link}';
+    });
+
+    function updateButtons() {
+        decreaseButton.disabled = quantityInput.value <= 1;
+    }
+
+    updateButtons();
+});
+
+			</script>
+			
+			
+			
+	</div>
+	
+	
+	
+	
+	<script>
+	
+	const slides = document.querySelector('.slides');
+const slide = document.querySelectorAll('.slide');
+const nextButton = document.querySelector('.next-button');
+const prevButton = document.querySelector('.prev-button');
+const thumbnails = document.querySelectorAll('.thumbnail img');
+const fullscreen = document.getElementById('fullscreen');
+const fullscreenImg = document.getElementById('fullscreenImg');
+const fullscreenPrevButton = document.querySelector('.fullscreen-prev-button');
+const fullscreenNextButton = document.querySelector('.fullscreen-next-button');
+const closeButton = document.querySelector('.close');
+
+let index = 0;
+
+function showNextSlide() {
+    index = (index + 1) % slide.length;
+    updateSlidePosition();
+}
+
+function showPrevSlide() {
+    index = (index - 1 + slide.length) % slide.length;
+    updateSlidePosition();
+}
+
+function updateSlidePosition() {
+    const slideWidth = slide[0].clientWidth;
+    slides.style.transform = `translateX(-${index * slideWidth}px)`;
+}
+
+nextButton.addEventListener('click', showNextSlide);
+prevButton.addEventListener('click', showPrevSlide);
+
+thumbnails.forEach((thumbnail, i) => {
+    thumbnail.addEventListener('click', () => {
+        index = i;
+        updateSlidePosition();
+    });
+});
+
+function openFullscreen(src, idx) {
+    fullscreen.style.display = 'block';
+    fullscreenImg.src = src;
+    fullscreenImg.dataset.index = idx;
+}
+
+function closeFullscreen() {
+    fullscreen.style.display = 'none';
+}
+
+function showNextFullscreenSlide() {
+    let idx = parseInt(fullscreenImg.dataset.index);
+    idx = (idx + 1) % slide.length;
+    fullscreenImg.src = slide[idx].querySelector('img').src;
+    fullscreenImg.dataset.index = idx;
+}
+
+function showPrevFullscreenSlide() {
+    let idx = parseInt(fullscreenImg.dataset.index);
+    idx = (idx - 1 + slide.length) % slide.length;
+    fullscreenImg.src = slide[idx].querySelector('img').src;
+    fullscreenImg.dataset.index = idx;
+}
+
+slide.forEach((slide, i) => {
+    slide.querySelector('img').addEventListener('click', (e) => {
+        openFullscreen(e.target.src, i);
+    });
+});
+
+closeButton.addEventListener('click', closeFullscreen);
+
+	</script>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
